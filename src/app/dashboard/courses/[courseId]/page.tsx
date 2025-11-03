@@ -1,7 +1,7 @@
 
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, notFound } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -14,10 +14,16 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { ArrowLeft, BookOpen, Check, Youtube } from 'lucide-react';
+import { ArrowLeft, BookOpen, Check, Youtube, Lightbulb, Bot, CheckCircle, XCircle } from 'lucide-react';
 import { useAppContext } from '@/context/AppContext';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useToast } from '@/hooks/use-toast';
+import { generateQuizzesFromLectureNotes } from '@/ai/flows/generate-quizzes-from-lecture-notes';
+import type { Quiz } from '@/lib/types';
+
 
 function getYouTubeVideoId(url: string) {
   let videoId = '';
@@ -42,6 +48,11 @@ function getYouTubeVideoId(url: string) {
 export default function CoursePage() {
   const { courseId } = useParams();
   const { courses, setCourses, isStateLoading } = useAppContext();
+  const [isGeneratingQuiz, setIsGeneratingQuiz] = useState(false);
+  const [quiz, setQuiz] = useState<Quiz | null>(null);
+  const [selectedAnswers, setSelectedAnswers] = useState<Record<number, string>>({});
+  const [submittedQuiz, setSubmittedQuiz] = useState(false);
+  const { toast } = useToast();
 
   const course = courses.find((c) => c.id === courseId);
 
@@ -62,6 +73,49 @@ export default function CoursePage() {
     );
   };
 
+  const handleGenerateQuiz = async (lectureNotes: string) => {
+    setIsGeneratingQuiz(true);
+    setQuiz(null);
+    setSelectedAnswers({});
+    setSubmittedQuiz(false);
+    try {
+      const quizResult = await generateQuizzesFromLectureNotes(lectureNotes);
+      setQuiz(quizResult);
+      toast({
+        title: 'Quiz Generated!',
+        description: 'Your quiz is ready to be taken.',
+      });
+    } catch (error) {
+      console.error('Failed to generate quiz:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Quiz Generation Failed',
+        description: 'There was an issue creating the quiz. Please try again.',
+      });
+    } finally {
+      setIsGeneratingQuiz(false);
+    }
+  };
+  
+  const handleAnswerChange = (questionIndex: number, answer: string) => {
+    setSelectedAnswers(prev => ({ ...prev, [questionIndex]: answer }));
+  };
+
+  const handleSubmitQuiz = () => {
+    setSubmittedQuiz(true);
+  };
+
+  const getQuizScore = () => {
+    if (!quiz) return { score: 0, total: 0 };
+    const correctAnswers = quiz.questions.reduce((acc, question, index) => {
+      if (selectedAnswers[index] === question.answer) {
+        return acc + 1;
+      }
+      return acc;
+    }, 0);
+    return { score: correctAnswers, total: quiz.questions.length };
+  };
+  
   if (isStateLoading) {
       return (
           <div className="space-y-6">
@@ -81,6 +135,8 @@ export default function CoursePage() {
   if (!course) {
     return notFound();
   }
+  
+  const { score, total } = getQuizScore();
 
   return (
     <div className="space-y-6">
@@ -136,7 +192,7 @@ export default function CoursePage() {
                       </div>
                     </AccordionTrigger>
                 </div>
-                <AccordionContent className="pl-12">
+                <AccordionContent className="pl-12 space-y-6">
                    <div className="prose prose-sm dark:prose-invert max-w-none">
                      {videoId && (
                       <div className="aspect-video mb-6">
@@ -151,6 +207,64 @@ export default function CoursePage() {
                     )}
                     <h4 className="font-semibold text-lg flex items-center gap-2 mb-2"><BookOpen size={18} /> Lecture Notes</h4>
                     <div dangerouslySetInnerHTML={{ __html: module.lectureNotes.replace(/\n/g, '<br />') }} />
+                   </div>
+                   
+                   <Separator />
+
+                   <div>
+                    <CardHeader className="p-0 mb-4">
+                      <CardTitle className="text-lg flex items-center gap-2"><Lightbulb size={18}/> Module Quiz</CardTitle>
+                      <CardDescription>Test your knowledge from the lecture notes.</CardDescription>
+                    </CardHeader>
+                    
+                    {isGeneratingQuiz ? (
+                       <div className="flex items-center gap-2 text-muted-foreground animate-pulse">
+                         <Bot className="h-5 w-5" />
+                         <p>Generating your quiz...</p>
+                       </div>
+                    ) : !quiz ? (
+                      <Button onClick={() => handleGenerateQuiz(module.lectureNotes)}>
+                        Generate Quiz
+                      </Button>
+                    ) : (
+                      <div className="space-y-6">
+                         {submittedQuiz && (
+                          <Card className={`p-4 ${score / total >= 0.7 ? 'bg-green-100 dark:bg-green-900/50 border-green-500' : 'bg-red-100 dark:bg-red-900/50 border-red-500'}`}>
+                            <CardHeader className="p-0">
+                              <CardTitle className="text-base">Quiz Result: {score} out of {total} correct ({Math.round((score/total)*100)}%)</CardTitle>
+                            </CardHeader>
+                          </Card>
+                         )}
+                        {quiz.questions.map((q, qIndex) => (
+                           <div key={qIndex} className="space-y-3">
+                             <p className="font-medium flex items-start gap-2">
+                               <span>{qIndex + 1}.</span> {q.question}
+                             </p>
+                             <RadioGroup 
+                              onValueChange={(value) => handleAnswerChange(qIndex, value)}
+                              value={selectedAnswers[qIndex]}
+                              disabled={submittedQuiz}
+                             >
+                               {q.options.map((option, oIndex) => {
+                                  const isCorrect = submittedQuiz && option === q.answer;
+                                  const isSelected = selectedAnswers[qIndex] === option;
+                                  const isIncorrect = submittedQuiz && isSelected && option !== q.answer;
+                                  
+                                  return (
+                                     <div key={oIndex} className={`flex items-center space-x-2 p-2 rounded-md ${isCorrect ? 'bg-green-100 dark:bg-green-900' : ''} ${isIncorrect ? 'bg-red-100 dark:bg-red-900' : ''}`}>
+                                        <RadioGroupItem value={option} id={`q${qIndex}-o${oIndex}`} />
+                                        <Label htmlFor={`q${qIndex}-o${oIndex}`} className="flex-1 cursor-pointer">{option}</Label>
+                                        {isCorrect && <CheckCircle className="h-5 w-5 text-green-600" />}
+                                        {isIncorrect && <XCircle className="h-5 w-5 text-red-600" />}
+                                    </div>
+                                  )
+                               })}
+                             </RadioGroup>
+                           </div>
+                         ))}
+                        <Button onClick={handleSubmitQuiz} disabled={submittedQuiz}>Submit Quiz</Button>
+                      </div>
+                    )}
                    </div>
                 </AccordionContent>
               </AccordionItem>

@@ -35,43 +35,8 @@ export async function generateCourseFromPrompt(
 const generateCoursePrompt = ai.definePrompt({
   name: 'generateCoursePrompt',
   input: {schema: GenerateCourseFromPromptInputSchema},
-  prompt: `You are a course generator. Your ONLY task is to generate a course with 10-15 modules on the following topic: {{{$input}}}.
-
-Each module must have a title, a relevant YouTube video link, and lecture notes.
-
-CRITICAL: You MUST strictly adhere to the topic provided in the input. For example, if the input is "Hindi learning course", you MUST generate a course about learning Hindi. DO NOT generate a course on any other topic.
-
-Your response MUST be a single, valid JSON object that conforms to the following structure:
-{
-  "modules": [
-    {
-      "title": "Module Title",
-      "youtubeVideoLink": "https://www.youtube.com/watch?v=...",
-      "lectureNotes": "Detailed notes for the module..."
-    }
-  ]
-}
-DO NOT include any other text, markdown formatting, or explanations outside of the JSON object.`,
-  config: {
-    safetySettings: [
-      {
-        category: 'HARM_CATEGORY_HATE_SPEECH',
-        threshold: 'BLOCK_ONLY_HIGH',
-      },
-      {
-        category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
-        threshold: 'BLOCK_NONE',
-      },
-      {
-        category: 'HARM_CATEGORY_HARASSMENT',
-        threshold: 'BLOCK_MEDIUM_AND_ABOVE',
-      },
-      {
-        category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
-        threshold: 'BLOCK_LOW_AND_ABOVE',
-      },
-    ],
-  },
+  output: {schema: GenerateCourseFromPromptOutputSchema},
+  prompt: `You are a curriculum designer. Given a topic, create a course syllabus with 10-15 modules. Each module must have a title, a relevant YouTube video link, and lecture notes.  Topic: {{{$input}}}`,
 });
 
 const generateCourseFromPromptFlow = ai.defineFlow(
@@ -81,15 +46,7 @@ const generateCourseFromPromptFlow = ai.defineFlow(
     outputSchema: GenerateCourseFromPromptOutputSchema,
   },
   async input => {
-    const {text} = await generateCoursePrompt(input);
-    try {
-        const parsedOutput = JSON.parse(text);
-        return GenerateCourseFromPromptOutputSchema.parse(parsedOutput);
-    } catch(e) {
-        console.error("Failed to parse AI output:", e);
-        console.error("Raw AI output:", text);
-        // Fallback or error handling
-        return { modules: [] };
-    }
+    const {output} = await generateCoursePrompt(input);
+    return output!;
   }
 );
