@@ -20,32 +20,16 @@ const initialUser: User = {
   avatar: 'https://picsum.photos/seed/avatar/128/128',
 };
 
-const initialCourses: UserCourse[] = [
-    {
-      id: 'course-1',
-      title: 'Introduction to React',
-      prompt: 'Learn the fundamentals of React for building modern web applications.',
-      modules: [],
-      progress: 60,
-      completedModules: [],
-    },
-    {
-      id: 'course-2',
-      title: 'Advanced Tailwind CSS',
-      prompt: 'Master advanced techniques and best practices in Tailwind CSS.',
-      modules: [],
-      progress: 25,
-      completedModules: [],
-    },
-];
+const initialCourses: UserCourse[] = [];
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
   const [isStateLoading, setIsStateLoading] = useState(true);
-  const [user, setUser] = useState<User>(initialUser);
-  const [courses, setCourses] = useState<UserCourse[]>(initialCourses);
+  const [user, setUser] = useState<User>(() => initialUser);
+  const [courses, setCourses] = useState<UserCourse[]>(() => initialCourses);
 
   useEffect(() => {
+    // This effect runs once on mount to load data from localStorage.
     try {
       const storedUser = window.localStorage.getItem('user');
       if (storedUser) {
@@ -68,10 +52,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [toast]);
   
   useEffect(() => {
+    // This effect runs whenever user state changes, but not on the initial load.
     if(!isStateLoading) {
         try {
-        window.localStorage.setItem('user', JSON.stringify(user));
+          window.localStorage.setItem('user', JSON.stringify(user));
         } catch (error) {
+            console.error(error);
             toast({
                 variant: "destructive",
                 title: "Failed to save user data",
@@ -82,10 +68,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [user, isStateLoading, toast]);
 
   useEffect(() => {
+    // This effect runs whenever courses state changes, but not on the initial load.
     if(!isStateLoading) {
         try {
             window.localStorage.setItem('courses', JSON.stringify(courses));
         } catch (error) {
+            console.error(error);
             toast({
                 variant: "destructive",
                 title: "Failed to save courses",

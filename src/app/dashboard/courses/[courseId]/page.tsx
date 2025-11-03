@@ -53,7 +53,7 @@ export default function CoursePage() {
             ? c.completedModules.filter(id => id !== moduleId)
             : [...c.completedModules, moduleId];
           
-          const progress = Math.round((completedModules.length / c.modules.length) * 100);
+          const progress = c.modules.length > 0 ? Math.round((completedModules.length / c.modules.length) * 100) : 0;
 
           return { ...c, completedModules, progress };
         }
@@ -144,7 +144,6 @@ export default function CoursePage() {
                           className="w-full h-full rounded-lg"
                           src={`https://www.youtube.com/embed/${videoId}`}
                           title="YouTube video player"
-                          frameBorder="0"
                           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                           allowFullScreen
                         ></iframe>
