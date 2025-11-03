@@ -68,7 +68,7 @@ export default function Home() {
             </p>
             <div className="mt-10 flex items-center justify-center gap-4">
               <Button size="lg" asChild>
-                <Link href="/dashboard">
+                <Link href="/signup">
                   Get Started for Free <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
