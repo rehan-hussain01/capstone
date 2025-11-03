@@ -1,6 +1,6 @@
-
 'use client';
 
+import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -16,13 +16,15 @@ import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
 import type { UserCourse } from '@/lib/types';
 import Link from 'next/link';
+import { useToast } from '@/hooks/use-toast';
 
 export default function ProfilePage() {
-  const user = {
+  const [user, setUser] = useState({
     name: 'Alex',
     email: 'alex@example.com',
     avatar: 'https://picsum.photos/seed/avatar/128/128',
-  };
+  });
+  const { toast } = useToast();
 
   const enrolledCourses: Omit<UserCourse, 'prompt' | 'modules' | 'completedModules'>[] = [
     {
@@ -36,6 +38,14 @@ export default function ProfilePage() {
       progress: 25,
     },
   ];
+  
+  const handleSaveChanges = () => {
+    // In a real app, you would save the user data to your backend here.
+    toast({
+      title: 'Profile Updated',
+      description: 'Your profile information has been saved successfully.',
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -64,14 +74,23 @@ export default function ProfilePage() {
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="name">Full Name</Label>
-              <Input id="name" defaultValue={user.name} />
+              <Input 
+                id="name" 
+                value={user.name} 
+                onChange={(e) => setUser({...user, name: e.target.value})}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" defaultValue={user.email} />
+              <Input 
+                id="email" 
+                type="email" 
+                value={user.email}
+                onChange={(e) => setUser({...user, email: e.target.value})}
+              />
             </div>
           </div>
-           <Button>Save Changes</Button>
+           <Button onClick={handleSaveChanges}>Save Changes</Button>
         </CardContent>
       </Card>
 
