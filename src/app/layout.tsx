@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
 import { ThemeProvider } from "@/components/common/theme-provider";
+import { AppProvider } from "@/context/AppContext";
 
 export const metadata: Metadata = {
   title: "LearnVerse | AI-Powered Course Generation",
@@ -29,7 +30,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <AppProvider>
+            {children}
+          </AppProvider>
           <Toaster />
         </ThemeProvider>
       </body>

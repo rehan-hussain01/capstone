@@ -29,10 +29,10 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Logo } from '@/components/common/Logo';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { AppProvider, useAppContext } from '@/context/AppContext';
+import { useAppContext } from '@/context/AppContext';
 import { Skeleton } from '@/components/ui/skeleton';
 
-function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { activeUser, setActiveUser, isStateLoading } = useAppContext();
   const isMobile = useIsMobile();
   const router = useRouter();
@@ -157,17 +157,4 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
       </div>
     </div>
   );
-}
-
-
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <AppProvider>
-      <DashboardLayoutContent>{children}</DashboardLayoutContent>
-    </AppProvider>
-  )
 }

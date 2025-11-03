@@ -12,8 +12,9 @@ import { Logo } from '@/components/common/Logo';
 import { useToast } from '@/hooks/use-toast';
 import { useAppContext } from '@/context/AppContext';
 import type { User } from '@/lib/types';
+import { AppProvider } from '@/context/AppContext';
 
-export default function LoginPage() {
+function LoginPageContent() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { toast } = useToast();
@@ -115,4 +116,10 @@ export default function LoginPage() {
       </Card>
     </div>
   );
+}
+
+export default function LoginPage() {
+  return (
+      <LoginPageContent />
+  )
 }
