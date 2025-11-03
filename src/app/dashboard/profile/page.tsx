@@ -15,15 +15,25 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
-import type { UserCourse, User } from '@/lib/types';
+import type { User } from '@/lib/types';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { useAppContext } from '@/context/AppContext';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { cartoonAvatars } from '@/lib/avatars';
+import Image from 'next/image';
 
 export default function ProfilePage() {
   const { activeUser, setActiveUser, courses, isStateLoading } = useAppContext();
   const [localUser, setLocalUser] = useState<User | null>(activeUser);
+  const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -40,19 +50,19 @@ export default function ProfilePage() {
     }
   };
 
-  const handleChangePhoto = () => {
+  const handleAvatarSelect = (avatarUrl: string) => {
     if (localUser) {
-      // Simulate changing photo by using a new random image from picsum.photos
-      const newAvatarUrl = `https://picsum.photos/seed/${Date.now()}/128/128`;
-      const updatedUser = { ...localUser, avatar: newAvatarUrl };
+      const updatedUser = { ...localUser, avatar: avatarUrl };
       setLocalUser(updatedUser);
       setActiveUser(updatedUser);
       toast({
         title: 'Photo Changed',
         description: 'Your profile photo has been updated.',
       });
+      setIsAvatarDialogOpen(false);
     }
   };
+
 
   if (isStateLoading || !localUser) {
     return (
@@ -86,8 +96,34 @@ export default function ProfilePage() {
               <AvatarFallback>{localUser.name.charAt(0)}</AvatarFallback>
             </Avatar>
             <div className="space-y-1">
-                <Button onClick={handleChangePhoto}>Change Photo</Button>
-                <p className="text-xs text-muted-foreground">JPG, GIF or PNG. 1MB max.</p>
+                <Dialog open={isAvatarDialogOpen} onOpenChange={setIsAvatarDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button>Change Photo</Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Choose your Avatar</DialogTitle>
+                    </DialogHeader>
+                    <div className="grid grid-cols-3 gap-4 py-4">
+                      {cartoonAvatars.map((avatar, index) => (
+                        <button 
+                          key={index}
+                          className="rounded-full overflow-hidden border-2 border-transparent hover:border-primary focus:border-primary focus:outline-none"
+                          onClick={() => handleAvatarSelect(avatar)}
+                        >
+                          <Image
+                            src={avatar}
+                            alt={`Avatar ${index + 1}`}
+                            width={128}
+                            height={128}
+                            className="w-full h-full object-cover"
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  </DialogContent>
+                </Dialog>
+                <p className="text-xs text-muted-foreground">Select a new avatar.</p>
             </div>
           </div>
 
