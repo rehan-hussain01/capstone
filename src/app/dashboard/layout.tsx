@@ -13,20 +13,6 @@ import {
   Users,
 } from 'lucide-react';
 
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarHeader,
-  SidebarInset,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
-  SidebarProvider,
-  SidebarTrigger,
-} from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -49,65 +35,66 @@ export default function DashboardLayout({
   const isMobile = useIsMobile();
   
   return (
-    <div className="bg-secondary/40">
-      <SidebarProvider>
-        <Sidebar>
-          <SidebarContent className="bg-background">
-            <SidebarHeader>
-              <Logo />
-            </SidebarHeader>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton href="/dashboard" isActive>
-                  <Home />
-                  My Courses
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton href="#">
-                  <Settings />
-                  Settings
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarContent>
-
-          <SidebarInset>
-            <header className="flex h-16 items-center justify-between gap-4 border-b bg-background px-6">
-              <div className="flex items-center gap-4">
-                <SidebarTrigger className="md:hidden" />
-                <h1 className="text-xl font-semibold font-headline">My Courses</h1>
-              </div>
-              <div className="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4 justify-end">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="rounded-full">
-                      <Avatar>
-                        <AvatarImage
-                          src="https://picsum.photos/seed/avatar/32/32"
-                          alt="User"
-                        />
-                        <AvatarFallback>U</AvatarFallback>
-                      </Avatar>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem>Settings</DropdownMenuItem>
-                    <DropdownMenuItem>Support</DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem>
-                       <Link href="/">Logout</Link>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </header>
-            {children}
-          </SidebarInset>
-        </Sidebar>
-      </SidebarProvider>
+    <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
+      <div className="hidden border-r bg-muted/40 md:block">
+        <div className="flex h-full max-h-screen flex-col gap-2">
+          <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
+            <Logo />
+          </div>
+          <div className="flex-1">
+            <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
+              <Link
+                href="/dashboard"
+                className="flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary"
+              >
+                <Home className="h-4 w-4" />
+                My Courses
+              </Link>
+              <Link
+                href="#"
+                className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+              >
+                <Settings className="h-4 w-4" />
+                Settings
+              </Link>
+            </nav>
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-col">
+        <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
+          <div className="w-full flex-1">
+             <h1 className="text-xl font-semibold font-headline">Welcome back, Learner!</h1>
+          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="secondary" size="icon" className="rounded-full">
+                <Avatar>
+                  <AvatarImage
+                    src="https://picsum.photos/seed/avatar/32/32"
+                    alt="User"
+                  />
+                  <AvatarFallback>U</AvatarFallback>
+                </Avatar>
+                <span className="sr-only">Toggle user menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>Settings</DropdownMenuItem>
+              <DropdownMenuItem>Support</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <Link href="/">Logout</Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </header>
+        <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
+          {children}
+        </main>
+      </div>
     </div>
   );
 }

@@ -14,7 +14,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { PlusCircle, BookOpen, Book, Youtube, ListChecks } from 'lucide-react';
+import { PlusCircle, BookOpen, Book, Youtube, ListChecks, ArrowRight } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import type { UserCourse } from '@/lib/types';
 import { Textarea } from '@/components/ui/textarea';
@@ -77,7 +77,7 @@ export default function DashboardPage() {
 
 
   return (
-    <main className="flex-1 p-6">
+    <>
        <div className="mb-8">
         <Card className="bg-background shadow-sm border-border">
           <CardHeader>
@@ -109,14 +109,15 @@ export default function DashboardPage() {
 
       <div>
         {(courses.length === 0 && !isLoading) ? (
-          <div className="w-full text-center py-20 border-2 border-dashed rounded-lg bg-background">
-            <div className="inline-block bg-primary/10 p-4 rounded-full">
-              <BookOpen className="h-10 w-10 text-primary" />
+           <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm">
+            <div className="flex flex-col items-center gap-1 text-center">
+              <h3 className="text-2xl font-bold tracking-tight">
+                Start your Learning Journey
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                You have no courses yet. Generate your first course to get started.
+              </p>
             </div>
-            <h3 className="mt-6 text-2xl font-bold font-headline">You have no courses yet</h3>
-            <p className="mt-2 text-base text-muted-foreground">
-              What do you want to learn today? Generate your first course above.
-            </p>
           </div>
         ) : (
           <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
@@ -255,6 +256,6 @@ export default function DashboardPage() {
           </div>
         )}
       </div>
-    </main>
+    </>
   );
 }
