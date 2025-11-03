@@ -31,10 +31,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { generateCourseFromPrompt } from '@/ai/flows/generate-course-from-prompt';
 import { useAppContext } from '@/context/AppContext';
+import { Skeleton } from '@/components/ui/skeleton';
 
 
 export default function DashboardPage() {
-  const { courses, setCourses } = useAppContext();
+  const { courses, setCourses, isStateLoading } = useAppContext();
   const [isLoading, setIsLoading] = React.useState(false);
   const [newCoursePrompt, setNewCoursePrompt] = React.useState('');
   const { toast } = useToast();
@@ -93,6 +94,18 @@ export default function DashboardPage() {
 
   const coursePlaceholder1 = PlaceHolderImages.find(p => p.id === 'course-placeholder-1');
 
+  if (isStateLoading) {
+    return (
+        <div>
+            <Skeleton className="h-[180px] w-full mb-8" />
+            <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
+                <Skeleton className="h-[280px] w-full" />
+                <Skeleton className="h-[280px] w-full" />
+                <Skeleton className="h-[280px] w-full" />
+            </div>
+        </div>
+    )
+  }
 
   return (
     <>

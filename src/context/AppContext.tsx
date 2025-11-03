@@ -9,6 +9,7 @@ interface AppContextType {
   setUser: React.Dispatch<React.SetStateAction<User>>;
   courses: UserCourse[];
   setCourses: React.Dispatch<React.SetStateAction<UserCourse[]>>;
+  isStateLoading: boolean;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -40,56 +41,63 @@ const initialCourses: UserCourse[] = [
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
-
-  const [user, setUser] = useState<User>(() => {
-    if (typeof window === 'undefined') return initialUser;
-    try {
-      const item = window.localStorage.getItem('user');
-      return item ? JSON.parse(item) : initialUser;
-    } catch (error) {
-      console.error(error);
-      return initialUser;
-    }
-  });
-  
-  const [courses, setCourses] = useState<UserCourse[]>(() => {
-    if (typeof window === 'undefined') return initialCourses;
-    try {
-      const item = window.localStorage.getItem('courses');
-      return item ? JSON.parse(item) : initialCourses;
-    } catch (error) {
-      console.error(error);
-      return initialCourses;
-    }
-  });
-  
-  useEffect(() => {
-    try {
-      window.localStorage.setItem('user', JSON.stringify(user));
-    } catch (error) {
-        toast({
-            variant: "destructive",
-            title: "Failed to save user data",
-            description: "There was an issue persisting your profile data."
-        })
-    }
-  }, [user, toast]);
+  const [isStateLoading, setIsStateLoading] = useState(true);
+  const [user, setUser] = useState<User>(initialUser);
+  const [courses, setCourses] = useState<UserCourse[]>(initialCourses);
 
   useEffect(() => {
     try {
-        window.localStorage.setItem('courses', JSON.stringify(courses));
+      const storedUser = window.localStorage.getItem('user');
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      }
+      const storedCourses = window.localStorage.getItem('courses');
+      if (storedCourses) {
+        setCourses(JSON.parse(storedCourses));
+      }
     } catch (error) {
-        toast({
-            variant: "destructive",
-            title: "Failed to save courses",
-            description: "There was an issue persisting your course data."
-        })
+      console.error(error);
+      toast({
+        variant: "destructive",
+        title: "Failed to load data",
+        description: "There was an issue loading your saved data from local storage."
+      });
+    } finally {
+        setIsStateLoading(false);
     }
-  }, [courses, toast]);
+  }, [toast]);
+  
+  useEffect(() => {
+    if(!isStateLoading) {
+        try {
+        window.localStorage.setItem('user', JSON.stringify(user));
+        } catch (error) {
+            toast({
+                variant: "destructive",
+                title: "Failed to save user data",
+                description: "There was an issue persisting your profile data."
+            })
+        }
+    }
+  }, [user, isStateLoading, toast]);
+
+  useEffect(() => {
+    if(!isStateLoading) {
+        try {
+            window.localStorage.setItem('courses', JSON.stringify(courses));
+        } catch (error) {
+            toast({
+                variant: "destructive",
+                title: "Failed to save courses",
+                description: "There was an issue persisting your course data."
+            })
+        }
+    }
+  }, [courses, isStateLoading, toast]);
 
 
   return (
-    <AppContext.Provider value={{ user, setUser, courses, setCourses }}>
+    <AppContext.Provider value={{ user, setUser, courses, setCourses, isStateLoading }}>
       {children}
     </AppContext.Provider>
   );

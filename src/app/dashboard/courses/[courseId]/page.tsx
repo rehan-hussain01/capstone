@@ -17,6 +17,7 @@ import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
 import { ArrowLeft, BookOpen, Check, Youtube } from 'lucide-react';
 import { useAppContext } from '@/context/AppContext';
+import { Skeleton } from '@/components/ui/skeleton';
 
 function getYouTubeVideoId(url: string) {
   let videoId = '';
@@ -40,7 +41,7 @@ function getYouTubeVideoId(url: string) {
 
 export default function CoursePage() {
   const { courseId } = useParams();
-  const { courses, setCourses } = useAppContext();
+  const { courses, setCourses, isStateLoading } = useAppContext();
 
   const course = courses.find((c) => c.id === courseId);
 
@@ -61,6 +62,21 @@ export default function CoursePage() {
     );
   };
 
+  if (isStateLoading) {
+      return (
+          <div className="space-y-6">
+              <div className="flex items-center gap-4">
+                  <Skeleton className="h-10 w-10" />
+                  <div className="space-y-2">
+                    <Skeleton className="h-8 w-64" />
+                    <Skeleton className="h-4 w-80" />
+                  </div>
+              </div>
+              <Skeleton className="h-32 w-full" />
+              <Skeleton className="h-96 w-full" />
+          </div>
+      )
+  }
 
   if (!course) {
     return notFound();

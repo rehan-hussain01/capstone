@@ -18,9 +18,10 @@ import type { UserCourse } from '@/lib/types';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { useAppContext } from '@/context/AppContext';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function ProfilePage() {
-  const { user, setUser, courses } = useAppContext();
+  const { user, setUser, courses, isStateLoading } = useAppContext();
   const [localUser, setLocalUser] = useState(user);
   const { toast } = useToast();
 
@@ -35,6 +36,19 @@ export default function ProfilePage() {
       description: 'Your profile information has been saved successfully.',
     });
   };
+
+  if (isStateLoading) {
+    return (
+        <div className="space-y-6">
+            <Skeleton className="h-8 w-1/3" />
+            <Skeleton className="h-4 w-2/3" />
+            <Separator />
+            <Skeleton className="h-64 w-full" />
+            <Skeleton className="h-48 w-full" />
+            <Skeleton className="h-56 w-full" />
+        </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
@@ -94,7 +108,7 @@ export default function ProfilePage() {
             {courses.length > 0 ? courses.map(course => (
                 <div key={course.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                     <div>
-                        <Link href="/dashboard" className="font-semibold hover:underline">{course.title}</Link>
+                        <Link href={`/dashboard/courses/${course.id}`} className="font-semibold hover:underline">{course.title}</Link>
                     </div>
                     <div className="flex items-center gap-4 w-1/3">
                         <Progress value={course.progress} className="h-2" />
