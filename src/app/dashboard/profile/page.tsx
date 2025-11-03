@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -14,30 +15,32 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
-import type { UserCourse } from '@/lib/types';
+import type { UserCourse, User } from '@/lib/types';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { useAppContext } from '@/context/AppContext';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function ProfilePage() {
-  const { user, setUser, courses, isStateLoading } = useAppContext();
-  const [localUser, setLocalUser] = useState(user);
+  const { activeUser, setActiveUser, courses, isStateLoading } = useAppContext();
+  const [localUser, setLocalUser] = useState<User | null>(activeUser);
   const { toast } = useToast();
 
   useEffect(() => {
-    setLocalUser(user);
-  }, [user]);
+    setLocalUser(activeUser);
+  }, [activeUser]);
   
   const handleSaveChanges = () => {
-    setUser(localUser);
-    toast({
-      title: 'Profile Updated',
-      description: 'Your profile information has been saved successfully.',
-    });
+    if (localUser) {
+      setActiveUser(localUser);
+      toast({
+        title: 'Profile Updated',
+        description: 'Your profile information has been saved successfully.',
+      });
+    }
   };
 
-  if (isStateLoading) {
+  if (isStateLoading || !localUser) {
     return (
         <div className="space-y-6">
             <Skeleton className="h-8 w-1/3" />
