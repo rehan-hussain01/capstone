@@ -11,12 +11,22 @@ import { Label } from '@/components/ui/label';
 import { Logo } from '@/components/common/Logo';
 import { useToast } from '@/hooks/use-toast';
 import { useAppContext } from '@/context/AppContext';
-import type { User } from '@/lib/types';
-import { AppProvider } from '@/context/AppContext';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 function LoginPageContent() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [resetEmail, setResetEmail] = useState('');
   const { toast } = useToast();
   const { setActiveUser, users } = useAppContext();
   const router = useRouter();
@@ -40,26 +50,23 @@ function LoginPageContent() {
       });
     }
   };
+  
+  const handlePasswordReset = () => {
+    if (resetEmail) {
+      toast({
+        title: 'Password Reset',
+        description: `If an account exists for ${resetEmail}, a password reset link has been sent.`,
+      });
+      setResetEmail('');
+    } else {
+       toast({
+        variant: 'destructive',
+        title: 'Email required',
+        description: 'Please enter your email address.',
+      });
+    }
+  };
 
-  const handleGoogleLogin = () => {
-     // This is a mock login. In a real app, this would use Firebase Auth.
-     const alexUser = users.find(u => u.email === 'alex@example.com');
-     if (alexUser) {
-        setActiveUser(alexUser);
-        router.push('/dashboard');
-     } else {
-        const newUser: User = {
-            name: 'Alex',
-            email: 'alex@example.com',
-            avatar: 'https://picsum.photos/seed/avatar/128/128',
-        };
-        // In a real app, you would not need this logic.
-        // This is just to ensure the default user exists for demo purposes.
-        localStorage.setItem('users', JSON.stringify([...users, newUser])); 
-        setActiveUser(newUser);
-        router.push('/dashboard');
-     }
-  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary">
@@ -87,9 +94,35 @@ function LoginPageContent() {
             <div className="grid gap-2">
               <div className="flex items-center">
                 <Label htmlFor="password">Password</Label>
-                <Link href="#" className="ml-auto inline-block text-sm underline">
-                  Forgot your password?
-                </Link>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                     <Button variant="link" className="ml-auto p-0 h-auto text-sm">
+                      Forgot your password?
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Forgot Password?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Enter your email address below and we'll send you a link to reset your password.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <div className="grid gap-2 py-2">
+                      <Label htmlFor="reset-email">Email Address</Label>
+                      <Input
+                        id="reset-email"
+                        type="email"
+                        placeholder="m@example.com"
+                        value={resetEmail}
+                        onChange={(e) => setResetEmail(e.target.value)}
+                      />
+                    </div>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={handlePasswordReset}>Send Reset Link</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
               <Input
                 id="password"
@@ -101,9 +134,6 @@ function LoginPageContent() {
             </div>
             <Button onClick={handleLogin} className="w-full">
               Login
-            </Button>
-            <Button onClick={handleGoogleLogin} variant="outline" className="w-full">
-              Login with Google
             </Button>
           </div>
           <div className="mt-4 text-center text-sm">

@@ -12,7 +12,6 @@ import { Logo } from '@/components/common/Logo';
 import { useToast } from '@/hooks/use-toast';
 import type { User } from '@/lib/types';
 import { useAppContext } from '@/context/AppContext';
-import { AppProvider } from '@/context/AppContext';
 
 function SignupPageContent() {
   const [fullName, setFullName] = useState('');
@@ -59,25 +58,6 @@ function SignupPageContent() {
     router.push('/dashboard');
   };
 
-  const handleGoogleSignup = () => {
-    // This is a mock signup. In a real app, this would use Firebase Auth.
-    const alexUser = users.find(u => u.email === 'alex@example.com');
-    if (alexUser) {
-       setActiveUser(alexUser);
-       router.push('/dashboard');
-    } else {
-       const newUser: User = {
-           name: 'Alex',
-           email: 'alex@example.com',
-           avatar: 'https://picsum.photos/seed/avatar/128/128',
-       };
-       setUsers(prevUsers => [...prevUsers, newUser]);
-       setActiveUser(newUser);
-       router.push('/dashboard');
-    }
- };
-
-
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary">
       <Card className="mx-auto w-full max-w-sm">
@@ -123,9 +103,6 @@ function SignupPageContent() {
             </div>
             <Button onClick={handleSignup} className="w-full">
               Create an account
-            </Button>
-            <Button onClick={handleGoogleSignup} variant="outline" className="w-full">
-              Sign up with Google
             </Button>
           </div>
           <div className="mt-4 text-center text-sm">
