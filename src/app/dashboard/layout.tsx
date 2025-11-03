@@ -33,6 +33,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const isMobile = useIsMobile();
+  const userName = "Alex"; // Placeholder for user name
   
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
@@ -64,7 +65,7 @@ export default function DashboardLayout({
       <div className="flex flex-col">
         <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
           <div className="w-full flex-1">
-             <h1 className="text-xl font-semibold font-headline">Welcome back, Learner!</h1>
+             <h1 className="text-xl font-semibold font-headline">Welcome back, {userName}!</h1>
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -74,7 +75,7 @@ export default function DashboardLayout({
                     src="https://picsum.photos/seed/avatar/32/32"
                     alt="User"
                   />
-                  <AvatarFallback>U</AvatarFallback>
+                  <AvatarFallback>{userName.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <span className="sr-only">Toggle user menu</span>
               </Button>
