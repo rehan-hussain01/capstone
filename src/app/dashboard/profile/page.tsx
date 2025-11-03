@@ -40,6 +40,20 @@ export default function ProfilePage() {
     }
   };
 
+  const handleChangePhoto = () => {
+    if (localUser) {
+      // Simulate changing photo by using a new random image from picsum.photos
+      const newAvatarUrl = `https://picsum.photos/seed/${Date.now()}/128/128`;
+      const updatedUser = { ...localUser, avatar: newAvatarUrl };
+      setLocalUser(updatedUser);
+      setActiveUser(updatedUser);
+      toast({
+        title: 'Photo Changed',
+        description: 'Your profile photo has been updated.',
+      });
+    }
+  };
+
   if (isStateLoading || !localUser) {
     return (
         <div className="space-y-6">
@@ -72,7 +86,7 @@ export default function ProfilePage() {
               <AvatarFallback>{localUser.name.charAt(0)}</AvatarFallback>
             </Avatar>
             <div className="space-y-1">
-                <Button>Change Photo</Button>
+                <Button onClick={handleChangePhoto}>Change Photo</Button>
                 <p className="text-xs text-muted-foreground">JPG, GIF or PNG. 1MB max.</p>
             </div>
           </div>
