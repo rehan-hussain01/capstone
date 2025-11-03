@@ -24,7 +24,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Progress } from '@/components/ui/progress';
-import { PlusCircle, Book, Youtube, Trash2 } from 'lucide-react';
+import { PlusCircle, Book, Youtube, Trash2, Bot } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import type { UserCourse } from '@/lib/types';
 import { Textarea } from '@/components/ui/textarea';
@@ -51,6 +51,7 @@ export default function DashboardPage() {
     }
     
     setIsLoading(true);
+    setCourses([]); // Clear existing courses to show loading state cleanly
     try {
       const result = await generateCourseFromPrompt(newCoursePrompt);
       if (result && result.modules) {
@@ -62,7 +63,7 @@ export default function DashboardPage() {
           progress: 0,
           completedModules: [],
         };
-        setCourses(prevCourses => [...prevCourses, newCourse]);
+        setCourses([newCourse]); // Set the new course as the only one
         toast({
           title: 'Course Generated!',
           description: `Your new course "${newCourse.title}" has been created.`,
@@ -133,13 +134,24 @@ export default function DashboardPage() {
                 </>}
               </Button>
             </div>
-            {isLoading && <Progress value={undefined} className="mt-4 h-1 animate-pulse" />}
           </CardContent>
         </Card>
       </div>
 
       <div>
-        {(courses.length === 0 && !isLoading) ? (
+        {isLoading ? (
+           <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm py-12">
+            <div className="flex flex-col items-center gap-2 text-center animate-pulse">
+               <Bot className="h-12 w-12 text-primary" />
+              <h3 className="text-2xl font-bold tracking-tight">
+                Generating your course...
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Please wait a moment while the AI builds your learning path.
+              </p>
+            </div>
+          </div>
+        ) : courses.length === 0 ? (
            <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm py-12">
             <div className="flex flex-col items-center gap-1 text-center">
               <h3 className="text-2xl font-bold tracking-tight">

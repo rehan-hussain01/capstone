@@ -22,7 +22,6 @@ const CourseModuleSchema = z.object({
 
 const GenerateCourseFromPromptOutputSchema = z.object({
   modules: z.array(CourseModuleSchema).describe('An array of course modules.'),
-  progress: z.string().describe('A short summary of course generation progress.'),
 });
 export type GenerateCourseFromPromptOutput = z.infer<typeof GenerateCourseFromPromptOutputSchema>;
 
@@ -36,14 +35,16 @@ const generateCoursePrompt = ai.definePrompt({
   name: 'generateCoursePrompt',
   input: {schema: GenerateCourseFromPromptInputSchema},
   output: {schema: GenerateCourseFromPromptOutputSchema},
-  prompt: `You are an expert AI course generator. Your task is to generate a comprehensive and in-depth course syllabus based on the following prompt: {{{$input}}}.
+  prompt: `You are a world-class expert AI course generator. Your sole task is to generate a comprehensive and in-depth course syllabus based on the following prompt: {{{$input}}}.
+
+Your response must be completely independent and not reference any previous conversations or generated content.
 
 The course must contain at least 10-15 detailed modules. Each module must have:
 1.  A specific and descriptive title.
 2.  A valid and directly relevant YouTube video link that works for embedding.
 3.  Comprehensive, well-structured lecture notes covering the key concepts of the module in detail.
 
-It is critical that you strictly adhere to the programming language or topic specified in the prompt. For example, if the prompt is for "Java", you must ONLY generate Java-related content.
+It is absolutely critical that you strictly adhere to the programming language or topic specified in the prompt. For example, if the prompt is for "Java", you must ONLY generate Java-related content. If the prompt is "NCERT class 9th mathematics", you MUST ONLY generate content for that specific curriculum.
 
 Format the output as a single, valid JSON object that strictly matches the GenerateCourseFromPromptOutputSchema schema. Do not include any text, markdown, or commentary outside of the JSON object in your response.`,
   config: {
