@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -51,7 +52,6 @@ export default function DashboardPage() {
     }
     
     setIsLoading(true);
-    setCourses([]); // Clear existing courses to show loading state cleanly
     try {
       const result = await generateCourseFromPrompt(newCoursePrompt);
       if (result && result.modules) {
@@ -63,7 +63,7 @@ export default function DashboardPage() {
           progress: 0,
           completedModules: [],
         };
-        setCourses([newCourse]); // Set the new course as the only one
+        setCourses(prevCourses => [newCourse, ...prevCourses]);
         toast({
           title: 'Course Generated!',
           description: `Your new course "${newCourse.title}" has been created.`,
