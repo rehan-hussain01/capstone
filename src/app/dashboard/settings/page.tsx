@@ -1,6 +1,7 @@
 
 'use client';
 
+import { useTheme } from 'next-themes';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -9,12 +10,13 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 
 export default function SettingsPage() {
+  const { theme, setTheme } = useTheme();
+
   return (
     <div className="space-y-6">
       <div>
@@ -65,13 +67,14 @@ export default function SettingsPage() {
         </CardHeader>
         <CardContent className="space-y-4">
            <div className="flex items-center space-x-2">
-            <Checkbox id="dark-mode" />
-            <label
-              htmlFor="dark-mode"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
+            <Switch
+              id="dark-mode"
+              checked={theme === 'dark'}
+              onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
+            />
+            <Label htmlFor="dark-mode" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
              Enable Dark Mode
-            </label>
+            </Label>
           </div>
         </CardContent>
       </Card>
