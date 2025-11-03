@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -201,8 +200,8 @@ export default function DashboardPage() {
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button className="w-full">
-                    Continue Learning
+                  <Button asChild className="w-full">
+                    <Link href={`/dashboard/courses/${course.id}`}>Continue Learning</Link>
                   </Button>
                 </CardFooter>
               </Card>
