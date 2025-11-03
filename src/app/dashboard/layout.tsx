@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -27,14 +26,11 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Logo } from '@/components/common/Logo';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { AppProvider, useAppContext } from '@/context/AppContext';
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
+  const { user } = useAppContext();
   const isMobile = useIsMobile();
-  const userName = "Alex"; // Placeholder for user name
   
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
@@ -73,17 +69,17 @@ export default function DashboardLayout({
       <div className="flex flex-col">
         <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
           <div className="w-full flex-1">
-             <h1 className="text-xl font-semibold font-headline">Welcome back, {userName}!</h1>
+             <h1 className="text-xl font-semibold font-headline">Welcome back, {user.name}!</h1>
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="secondary" size="icon" className="rounded-full">
                 <Avatar>
                   <AvatarImage
-                    src="https://picsum.photos/seed/avatar/32/32"
-                    alt="User"
+                    src={user.avatar}
+                    alt={user.name}
                   />
-                  <AvatarFallback>{userName.charAt(0)}</AvatarFallback>
+                  <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <span className="sr-only">Toggle user menu</span>
               </Button>
@@ -111,4 +107,17 @@ export default function DashboardLayout({
       </div>
     </div>
   );
+}
+
+
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <AppProvider>
+      <DashboardLayoutContent>{children}</DashboardLayoutContent>
+    </AppProvider>
+  )
 }

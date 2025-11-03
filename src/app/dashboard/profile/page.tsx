@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -17,30 +17,19 @@ import { Separator } from '@/components/ui/separator';
 import type { UserCourse } from '@/lib/types';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
+import { useAppContext } from '@/context/AppContext';
 
 export default function ProfilePage() {
-  const [user, setUser] = useState({
-    name: 'Alex',
-    email: 'alex@example.com',
-    avatar: 'https://picsum.photos/seed/avatar/128/128',
-  });
+  const { user, setUser, courses } = useAppContext();
+  const [localUser, setLocalUser] = useState(user);
   const { toast } = useToast();
 
-  const enrolledCourses: Omit<UserCourse, 'prompt' | 'modules' | 'completedModules'>[] = [
-    {
-      id: 'course-1',
-      title: 'Introduction to React',
-      progress: 60,
-    },
-    {
-      id: 'course-2',
-      title: 'Advanced Tailwind CSS',
-      progress: 25,
-    },
-  ];
+  useEffect(() => {
+    setLocalUser(user);
+  }, [user]);
   
   const handleSaveChanges = () => {
-    // In a real app, you would save the user data to your backend here.
+    setUser(localUser);
     toast({
       title: 'Profile Updated',
       description: 'Your profile information has been saved successfully.',
@@ -62,8 +51,8 @@ export default function ProfilePage() {
         <CardContent className="space-y-6">
           <div className="flex items-center gap-6">
             <Avatar className="h-24 w-24">
-              <AvatarImage src={user.avatar} alt={user.name} />
-              <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+              <AvatarImage src={localUser.avatar} alt={localUser.name} />
+              <AvatarFallback>{localUser.name.charAt(0)}</AvatarFallback>
             </Avatar>
             <div className="space-y-1">
                 <Button>Change Photo</Button>
@@ -76,8 +65,8 @@ export default function ProfilePage() {
               <Label htmlFor="name">Full Name</Label>
               <Input 
                 id="name" 
-                value={user.name} 
-                onChange={(e) => setUser({...user, name: e.target.value})}
+                value={localUser.name} 
+                onChange={(e) => setLocalUser({...localUser, name: e.target.value})}
               />
             </div>
             <div className="space-y-2">
@@ -85,8 +74,8 @@ export default function ProfilePage() {
               <Input 
                 id="email" 
                 type="email" 
-                value={user.email}
-                onChange={(e) => setUser({...user, email: e.target.value})}
+                value={localUser.email}
+                onChange={(e) => setLocalUser({...localUser, email: e.target.value})}
               />
             </div>
           </div>
@@ -102,7 +91,7 @@ export default function ProfilePage() {
             </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-            {enrolledCourses.map(course => (
+            {courses.length > 0 ? courses.map(course => (
                 <div key={course.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                     <div>
                         <Link href="/dashboard" className="font-semibold hover:underline">{course.title}</Link>
@@ -112,7 +101,9 @@ export default function ProfilePage() {
                         <span className="text-sm text-muted-foreground">{course.progress}%</span>
                     </div>
                 </div>
-            ))}
+            )) : (
+              <p className="text-sm text-muted-foreground text-center">You are not enrolled in any courses yet.</p>
+            )}
         </CardContent>
       </Card>
 

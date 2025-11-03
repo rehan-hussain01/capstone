@@ -20,10 +20,11 @@ import type { UserCourse } from '@/lib/types';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { generateCourseFromPrompt, GenerateCourseFromPromptOutput } from '@/ai/flows/generate-course-from-prompt';
+import { useAppContext } from '@/context/AppContext';
 
 
 export default function DashboardPage() {
-  const [courses, setCourses] = React.useState<UserCourse[]>([]);
+  const { courses, setCourses } = useAppContext();
   const [isLoading, setIsLoading] = React.useState(false);
   const [newCoursePrompt, setNewCoursePrompt] = React.useState('');
   const { toast } = useToast();
@@ -109,7 +110,7 @@ export default function DashboardPage() {
 
       <div>
         {(courses.length === 0 && !isLoading) ? (
-           <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm">
+           <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm py-12">
             <div className="flex flex-col items-center gap-1 text-center">
               <h3 className="text-2xl font-bold tracking-tight">
                 Start your Learning Journey
@@ -164,95 +165,6 @@ export default function DashboardPage() {
                 </CardFooter>
               </Card>
             ))}
-
-            {/* Example Courses */}
-             <Card className="flex flex-col bg-background shadow-sm border-border hover:shadow-md transition-shadow">
-               <CardHeader className="flex-row items-start gap-4 space-y-0">
-                 {coursePlaceholder1 && (
-                   <div className="relative h-24 w-24 flex-shrink-0">
-                     <Image
-                        src={coursePlaceholder1.imageUrl}
-                        alt={coursePlaceholder1.description}
-                        fill
-                        className="object-cover rounded-md"
-                        data-ai-hint={coursePlaceholder1.imageHint}
-                      />
-                   </div>
-                  )}
-                  <div className="flex-1">
-                    <CardTitle className="text-lg font-headline mb-1">Introduction to React</CardTitle>
-                    <CardDescription className="line-clamp-2 text-xs">Learn the fundamentals of React for building modern web applications.</CardDescription>
-                     <div className="mt-2 flex items-center text-xs text-muted-foreground space-x-2">
-                       <div className="flex items-center gap-1">
-                        <Book size={14} />
-                        <span>10 Modules</span>
-                       </div>
-                       <div className="flex items-center gap-1">
-                        <Youtube size={14} />
-                        <span>10 Videos</span>
-                       </div>
-                    </div>
-                  </div>
-                </CardHeader>
-              <CardContent className="flex-1">
-                 <div className="space-y-2">
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="font-medium">60% complete</span>
-                      <span className="text-muted-foreground">6 of 10 completed</span>
-                    </div>
-                    <Progress value={60} className="h-2"/>
-                  </div>
-              </CardContent>
-              <CardFooter>
-                  <Button className="w-full">
-                    Continue Learning
-                  </Button>
-              </CardFooter>
-            </Card>
-             <Card className="flex flex-col bg-background shadow-sm border-border hover:shadow-md transition-shadow">
-               <CardHeader className="flex-row items-start gap-4 space-y-0">
-                 {coursePlaceholder2 && (
-                   <div className="relative h-24 w-24 flex-shrink-0">
-                     <Image
-                        src={coursePlaceholder2.imageUrl}
-                        alt={coursePlaceholder2.description}
-                        fill
-                        className="object-cover rounded-md"
-                        data-ai-hint={coursePlaceholder2.imageHint}
-                      />
-                   </div>
-                  )}
-                  <div className="flex-1">
-                    <CardTitle className="text-lg font-headline mb-1">Advanced Tailwind CSS</CardTitle>
-                    <CardDescription className="line-clamp-2 text-xs">Master advanced techniques and best practices in Tailwind CSS.</CardDescription>
-                     <div className="mt-2 flex items-center text-xs text-muted-foreground space-x-2">
-                       <div className="flex items-center gap-1">
-                        <Book size={14} />
-                        <span>8 Modules</span>
-                       </div>
-                       <div className="flex items-center gap-1">
-                        <Youtube size={14} />
-                        <span>8 Videos</span>
-                       </div>
-                    </div>
-                  </div>
-                </CardHeader>
-              <CardContent className="flex-1">
-                 <div className="space-y-2">
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="font-medium">25% complete</span>
-                      <span className="text-muted-foreground">2 of 8 completed</span>
-                    </div>
-                    <Progress value={25} className="h-2"/>
-                  </div>
-              </CardContent>
-              <CardFooter>
-                  <Button className="w-full">
-                    Continue Learning
-                  </Button>
-              </CardFooter>
-            </Card>
-
           </div>
         )}
       </div>
