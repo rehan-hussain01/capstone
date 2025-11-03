@@ -30,11 +30,11 @@ export default function SignupPage() {
               <Label htmlFor="password">Password</Label>
               <Input id="password" type="password" required />
             </div>
-            <Button type="submit" className="w-full">
-              Create an account
+            <Button asChild className="w-full">
+              <Link href="/dashboard">Create an account</Link>
             </Button>
-            <Button variant="outline" className="w-full">
-              Sign up with Google
+            <Button asChild variant="outline" className="w-full">
+              <Link href="/dashboard">Sign up with Google</Link>
             </Button>
           </div>
           <div className="mt-4 text-center text-sm">
