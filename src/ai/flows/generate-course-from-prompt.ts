@@ -36,18 +36,13 @@ const generateCoursePrompt = ai.definePrompt({
   name: 'generateCoursePrompt',
   input: {schema: GenerateCourseFromPromptInputSchema},
   output: {schema: GenerateCourseFromPromptOutputSchema},
-  prompt: `You are a world-class expert AI course generator. Your sole task is to generate a comprehensive and in-depth course syllabus based ONLY on the following prompt: {{{$input}}}.
+  prompt: `You are a course generator. Generate a course with 10-15 modules on the following topic: {{{$input}}}.
 
-Your response must be completely independent and not reference any previous conversations or generated content.
-
-The course must contain at least 10-15 detailed modules. Each module must have:
-1.  A specific and descriptive title.
-2.  A valid and directly relevant YouTube video link that works for embedding.
-3.  Comprehensive, well-structured lecture notes covering the key concepts of the module in detail.
+Each module must have a title, a relevant YouTube video link, and lecture notes.
 
 It is absolutely critical that you strictly adhere to the programming language or topic specified in the prompt. For example, if the prompt is for "Java", you must ONLY generate Java-related content. If the prompt is "NCERT class 9th mathematics", you MUST ONLY generate content for that specific curriculum. If the prompt is about "English speaking", you MUST ONLY generate content related to learning English. Under NO circumstances should you include content from other topics like "Python" if it was not requested.
 
-Format the output as a single, valid JSON object that strictly matches the GenerateCourseFromPromptOutputSchema schema. Do not include any text, markdown, or commentary outside of the JSON object in your response.`,
+Your response must be ONLY the JSON object matching the output schema. Do not include any other text or markdown.`,
   config: {
     safetySettings: [
       {
