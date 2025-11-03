@@ -13,13 +13,24 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { Progress } from '@/components/ui/progress';
-import { PlusCircle, BookOpen, Book, Youtube, ListChecks, ArrowRight } from 'lucide-react';
+import { PlusCircle, Book, Youtube, Trash2 } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import type { UserCourse } from '@/lib/types';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { generateCourseFromPrompt, GenerateCourseFromPromptOutput } from '@/ai/flows/generate-course-from-prompt';
+import { generateCourseFromPrompt } from '@/ai/flows/generate-course-from-prompt';
 import { useAppContext } from '@/context/AppContext';
 
 
@@ -72,9 +83,16 @@ export default function DashboardPage() {
     }
   };
 
+  const handleDeleteCourse = (courseId: string) => {
+    setCourses(prevCourses => prevCourses.filter(course => course.id !== courseId));
+    toast({
+      title: 'Course Deleted',
+      description: 'The course has been successfully removed.',
+    });
+  };
+
 
   const coursePlaceholder1 = PlaceHolderImages.find(p => p.id === 'course-placeholder-1');
-  const coursePlaceholder2 = PlaceHolderImages.find(p => p.id === 'course-placeholder-2');
 
 
   return (
@@ -148,6 +166,30 @@ export default function DashboardPage() {
                        </div>
                     </div>
                   </div>
+                   <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="ghost" size="icon" className="flex-shrink-0">
+                          <Trash2 className="h-4 w-4 text-muted-foreground" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete the course "{course.title}".
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleDeleteCourse(course.id)}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                 </CardHeader>
                 <CardContent className="flex-1">
                   <div className="space-y-2">
