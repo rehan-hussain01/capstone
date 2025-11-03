@@ -12,7 +12,10 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
+import type { UserCourse } from '@/lib/types';
+import Link from 'next/link';
 
 export default function ProfilePage() {
   const user = {
@@ -20,6 +23,19 @@ export default function ProfilePage() {
     email: 'alex@example.com',
     avatar: 'https://picsum.photos/seed/avatar/128/128',
   };
+
+  const enrolledCourses: Omit<UserCourse, 'prompt' | 'modules' | 'completedModules'>[] = [
+    {
+      id: 'course-1',
+      title: 'Introduction to React',
+      progress: 60,
+    },
+    {
+      id: 'course-2',
+      title: 'Advanced Tailwind CSS',
+      progress: 25,
+    },
+  ];
 
   return (
     <div className="space-y-6">
@@ -58,6 +74,29 @@ export default function ProfilePage() {
            <Button>Save Changes</Button>
         </CardContent>
       </Card>
+
+      <Card>
+        <CardHeader>
+            <CardTitle>Enrolled Courses</CardTitle>
+            <CardDescription>
+                Here are the courses you are currently enrolled in.
+            </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+            {enrolledCourses.map(course => (
+                <div key={course.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                    <div>
+                        <Link href="/dashboard" className="font-semibold hover:underline">{course.title}</Link>
+                    </div>
+                    <div className="flex items-center gap-4 w-1/3">
+                        <Progress value={course.progress} className="h-2" />
+                        <span className="text-sm text-muted-foreground">{course.progress}%</span>
+                    </div>
+                </div>
+            ))}
+        </CardContent>
+      </Card>
+
        <Card>
         <CardHeader>
           <CardTitle>Change Password</CardTitle>
